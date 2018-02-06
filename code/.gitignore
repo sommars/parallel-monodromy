@@ -1,0 +1,4 @@
+*.o
+pmonodromy
+.DS_Store
+*.swp

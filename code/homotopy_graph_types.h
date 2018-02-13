@@ -20,10 +20,10 @@ typedef struct HomotopyNode HomotopyNode;
 //------------------------------------------------------------------------------
 struct Correspondence
 {
-	int SourceSol;
-	int DestSol;
-	double TimeRequired;
-	bool IsFailure;
+  int SourceSol;
+  int DestSol;
+  double TimeRequired;
+  bool IsFailure;
 };
 
 //------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ struct HomotopyDirectedEdge
   int OtherEdgeID;
   set<int> TrackableSolutions;
   double ExpectedValue;
-	double ExpectedFailures;
+  double ExpectedFailures;
   int TrackerCount;
   int SuccessfulCorrespondences;
   int SourceFailures;
@@ -55,7 +55,7 @@ struct HomotopyGraph
   double Lambda;
   set<int> EdgesBeingTrackedIDs;
   string EVType;
-HomotopyGraph(int RC): RootCount(RC), NumberOfCompleteNodes(0) {};
+  HomotopyGraph(int RC): RootCount(RC), NumberOfCompleteNodes(0) {};
 };
 
 //------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ struct HomotopyNode
   int ID;
   double ExpectedValue;
   map<int, int> InwardTaskCounts;
-HomotopyNode(HomotopyGraph * G): ID(G->Nodes.size()), SolutionCount(0), Solutions(vector<bool> (G->RootCount)) {};
+  HomotopyNode(HomotopyGraph * G): ID(G->Nodes.size()), SolutionCount(0), Solutions(vector<bool> (G->RootCount)) {};
 };
 
 //------------------------------------------------------------------------------

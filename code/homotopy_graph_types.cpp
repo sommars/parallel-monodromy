@@ -10,70 +10,70 @@ void AddEdges(HomotopyGraph* G, HomotopyNode* N1, HomotopyNode* N2, string &Corr
   string FirstVal, SecondVal, ThirdVal;
   bool OnFirstInt = false;
   bool OnSecondInt = false;
-	for (string::iterator it=CorrStr.begin(); it!=CorrStr.end(); ++it)
-	{
-		if ((*it) == ';')
-			break;
-		else if ((*it) == '{') {
-			OnFirstInt = true;
-			OnSecondInt = false;
-		} else if ((*it) == '}') {
-			long double TimeRequired = stold(ThirdVal);
-			if ((FirstVal != "null") && (SecondVal != "null")) {
-				Correspondence C;
-				C.SourceSol = stoi(FirstVal);
-				C.DestSol = stoi(SecondVal);
-				C.IsFailure = false;
-				C.TimeRequired = TimeRequired;
-				Correspondence OtherC;
-				OtherC.SourceSol = C.DestSol;
-				OtherC.DestSol = C.SourceSol;
-				OtherC.TimeRequired = C.TimeRequired;
-				OtherC.IsFailure = false;
-				E1.Correspondences[C.SourceSol] = C;
-				E2.Correspondences[OtherC.SourceSol] = OtherC;
-			} else if (FirstVal == "null") {
-				Correspondence OtherC;
-				OtherC.SourceSol = stoi(SecondVal);
-				OtherC.IsFailure = true;
-				OtherC.TimeRequired = TimeRequired;
-				E2.Correspondences[OtherC.SourceSol] = OtherC;
-			} else if (SecondVal == "null") {
-				Correspondence C;
-				C.SourceSol = stoi(FirstVal);
-				C.IsFailure = true;
-				C.TimeRequired = TimeRequired;
-				E1.Correspondences[C.SourceSol] = C;	
-			} else
-				throw invalid_argument("Invalid input. A triple can't have two nulls.");
+  for (string::iterator it=CorrStr.begin(); it!=CorrStr.end(); ++it)
+  {
+    if ((*it) == ';')
+      break;
+    else if ((*it) == '{') {
+      OnFirstInt = true;
+      OnSecondInt = false;
+    } else if ((*it) == '}') {
+      long double TimeRequired = stold(ThirdVal);
+      if ((FirstVal != "null") && (SecondVal != "null")) {
+        Correspondence C;
+        C.SourceSol = stoi(FirstVal);
+        C.DestSol = stoi(SecondVal);
+        C.IsFailure = false;
+        C.TimeRequired = TimeRequired;
+        Correspondence OtherC;
+        OtherC.SourceSol = C.DestSol;
+        OtherC.DestSol = C.SourceSol;
+        OtherC.TimeRequired = C.TimeRequired;
+        OtherC.IsFailure = false;
+        E1.Correspondences[C.SourceSol] = C;
+        E2.Correspondences[OtherC.SourceSol] = OtherC;
+      } else if (FirstVal == "null") {
+        Correspondence OtherC;
+        OtherC.SourceSol = stoi(SecondVal);
+        OtherC.IsFailure = true;
+        OtherC.TimeRequired = TimeRequired;
+        E2.Correspondences[OtherC.SourceSol] = OtherC;
+      } else if (SecondVal == "null") {
+        Correspondence C;
+        C.SourceSol = stoi(FirstVal);
+        C.IsFailure = true;
+        C.TimeRequired = TimeRequired;
+        E1.Correspondences[C.SourceSol] = C;  
+      } else
+        throw invalid_argument("Invalid input. A triple can't have two nulls.");
 
-			OnFirstInt = false;
-			OnSecondInt = false;
-			FirstVal.clear();
-			SecondVal.clear();
-			ThirdVal.clear();
-		} else if ((*it) == ',') {
-			if (OnFirstInt) {
-				OnFirstInt = false;
-				OnSecondInt = true;
-			} else if (OnSecondInt) {
-				OnFirstInt = false;
-				OnSecondInt = false;
-			} else
-				continue; // This is the , between triples
-		} else {
-			if (OnFirstInt)
-				FirstVal += (*it);
-			else if (OnSecondInt)
-				SecondVal += (*it);
-			else
-				ThirdVal += (*it);
-		};
-	};
+      OnFirstInt = false;
+      OnSecondInt = false;
+      FirstVal.clear();
+      SecondVal.clear();
+      ThirdVal.clear();
+    } else if ((*it) == ',') {
+      if (OnFirstInt) {
+        OnFirstInt = false;
+        OnSecondInt = true;
+      } else if (OnSecondInt) {
+        OnFirstInt = false;
+        OnSecondInt = false;
+      } else
+        continue; // This is the , between triples
+    } else {
+      if (OnFirstInt)
+        FirstVal += (*it);
+      else if (OnSecondInt)
+        SecondVal += (*it);
+      else
+        ThirdVal += (*it);
+    };
+  };
   
   E1.TrackerCount = 0;
   E1.SourceFailures = 0;
-	E1.ExpectedFailures = 0;
+  E1.ExpectedFailures = 0;
   E1.ExpectedValue = 0;
   E1.NumberOfAttempts = 0;
   E1.ID = G->Edges.size();
@@ -85,7 +85,7 @@ void AddEdges(HomotopyGraph* G, HomotopyNode* N1, HomotopyNode* N2, string &Corr
 
   E2.TrackerCount = 0;
   E2.SourceFailures = 0;
-	E2.ExpectedFailures = 0;
+  E2.ExpectedFailures = 0;
   E2.ExpectedValue = 0;
   E2.NumberOfAttempts = 0;
   E2.ID = G->Edges.size();
@@ -104,37 +104,37 @@ void AddEdges(HomotopyGraph* G, HomotopyNode* N1, HomotopyNode* N2, string &Corr
 //------------------------------------------------------------------------------
 HomotopyGraph InitializeEmptyGraphFromCompletedGraph(HomotopyGraph* CompletedG)
 {
-	HomotopyGraph G(CompletedG->RootCount);
-	G.NumberOfCompleteNodes = 0;
-	G.EVType = CompletedG->EVType;
-	G.Alpha = CompletedG->Alpha;
-	G.Lambda = CompletedG->Lambda;
-	G.NoFailures = CompletedG->NoFailures;
-	for (size_t i = 0; i != CompletedG->Nodes.size(); i++)
-	{
-		HomotopyNode NewNode(&G);
-		G.Nodes.push_back(NewNode);
-		for (size_t j = 0; j != G.Nodes[i].Solutions.size(); j++)
-			G.Nodes[i].Solutions[j] = false;
-		G.Nodes[i].OutgoingEdgeIDs = CompletedG->Nodes[i].OutgoingEdgeIDs;
-		G.Nodes[i].IncomingEdgeIDs = CompletedG->Nodes[i].IncomingEdgeIDs;
-		G.Nodes[i].ExpectedValue = 0;
-	};
-	for (size_t i = 0; i != CompletedG->Edges.size(); i++)
-	{
-		HomotopyDirectedEdge E;
-		E.SourceNodeID = CompletedG->Edges[i].SourceNodeID;
-		E.TargetNodeID = CompletedG->Edges[i].TargetNodeID;
-		E.ID = CompletedG->Edges[i].ID;
-		E.OtherEdgeID = CompletedG->Edges[i].OtherEdgeID;
-		E.ExpectedValue = 0;
-		E.NumberOfAttempts = 0;
-		E.TrackerCount = 0;
-		E.SuccessfulCorrespondences = 0;
-		E.SourceFailures = 0;
-		E.ExpectedFailures = 0;
-		G.Edges.push_back(E);
-	};
+  HomotopyGraph G(CompletedG->RootCount);
+  G.NumberOfCompleteNodes = 0;
+  G.EVType = CompletedG->EVType;
+  G.Alpha = CompletedG->Alpha;
+  G.Lambda = CompletedG->Lambda;
+  G.NoFailures = CompletedG->NoFailures;
+  for (size_t i = 0; i != CompletedG->Nodes.size(); i++)
+  {
+    HomotopyNode NewNode(&G);
+    G.Nodes.push_back(NewNode);
+    for (size_t j = 0; j != G.Nodes[i].Solutions.size(); j++)
+      G.Nodes[i].Solutions[j] = false;
+    G.Nodes[i].OutgoingEdgeIDs = CompletedG->Nodes[i].OutgoingEdgeIDs;
+    G.Nodes[i].IncomingEdgeIDs = CompletedG->Nodes[i].IncomingEdgeIDs;
+    G.Nodes[i].ExpectedValue = 0;
+  };
+  for (size_t i = 0; i != CompletedG->Edges.size(); i++)
+  {
+    HomotopyDirectedEdge E;
+    E.SourceNodeID = CompletedG->Edges[i].SourceNodeID;
+    E.TargetNodeID = CompletedG->Edges[i].TargetNodeID;
+    E.ID = CompletedG->Edges[i].ID;
+    E.OtherEdgeID = CompletedG->Edges[i].OtherEdgeID;
+    E.ExpectedValue = 0;
+    E.NumberOfAttempts = 0;
+    E.TrackerCount = 0;
+    E.SuccessfulCorrespondences = 0;
+    E.SourceFailures = 0;
+    E.ExpectedFailures = 0;
+    G.Edges.push_back(E);
+  };
 
   uniform_int_distribution<int> NodeChooser(0,G.Nodes.size()-1);
   int NodeWithKnownSolution = NodeChooser(mt);
@@ -170,128 +170,128 @@ HomotopyGraph InitializeEmptyGraphFromCompletedGraph(HomotopyGraph* CompletedG)
 //------------------------------------------------------------------------------
 HomotopyGraph InitializeGraphFromFile(string &FileName, int seed)
 {
-	ifstream infile(FileName);
-	if(!infile.good())
-		throw invalid_argument("Please input a valid filename.");
+  ifstream infile(FileName);
+  if(!infile.good())
+    throw invalid_argument("Please input a valid filename.");
 
   mt.seed(seed);
-	string str;
-	size_t EqualsIndex;
-	size_t SemicolonIndex;
-	getline(infile, str); // Eat the first line.
-	getline(infile, str); // Eat the second line with the system or the edge count.
-	
-	getline(infile, str); // This should be the line with root count.
-	EqualsIndex = str.find("=");
-	SemicolonIndex = str.find(";");
-	HomotopyGraph G(stoi(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1))));
-	G.NumberOfCompleteNodes = G.Nodes.size();
+  string str;
+  size_t EqualsIndex;
+  size_t SemicolonIndex;
+  getline(infile, str); // Eat the first line.
+  getline(infile, str); // Eat the second line with the system or the edge count.
+  
+  getline(infile, str); // This should be the line with root count.
+  EqualsIndex = str.find("=");
+  SemicolonIndex = str.find(";");
+  HomotopyGraph G(stoi(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1))));
+  G.NumberOfCompleteNodes = G.Nodes.size();
 
-	getline(infile, str); // This should be the line with node count.
-	EqualsIndex = str.find("=");
-	SemicolonIndex = str.find(";");
-	int NodeCount = stoi(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1)));
-	
-	getline(infile, str); // This should be the line with alpha.
-	EqualsIndex = str.find("=");
-	SemicolonIndex = str.find(";");
-	double Alpha = stof(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1)));
-	G.Alpha = Alpha;
+  getline(infile, str); // This should be the line with node count.
+  EqualsIndex = str.find("=");
+  SemicolonIndex = str.find(";");
+  int NodeCount = stoi(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1)));
+  
+  getline(infile, str); // This should be the line with alpha.
+  EqualsIndex = str.find("=");
+  SemicolonIndex = str.find(";");
+  double Alpha = stof(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1)));
+  G.Alpha = Alpha;
 
-	getline(infile, str); // This should be the line with lambda.
-	EqualsIndex = str.find("=");
-	SemicolonIndex = str.find(";");
-	double Lambda = stof(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1)));
-	G.Lambda = Lambda;
-	
-	for (size_t i = 0; i != NodeCount; i++)
-	{
-		HomotopyNode NewNode(&G);
-		G.Nodes.push_back(NewNode);
-		G.Nodes[i].SolutionCount = G.RootCount;
-		for (size_t j = 0; j != G.Nodes[i].Solutions.size(); j++)
-			G.Nodes[i].Solutions[j] = true;
-	};
-	
-	while (getline(infile, str)) {
-		// Snag the correct nodes
-		size_t OpenParenIndex = str.find("(");
-		size_t CloseParenIndex = str.find(")");
-		size_t CommaIndex = str.find(",");
-		int SourceNodeIndex = stoi(str.substr(OpenParenIndex+1,CommaIndex - (OpenParenIndex + 1)));
-		int DestNodeIndex = stoi(str.substr(CommaIndex+1,CloseParenIndex - (CommaIndex + 1)));
-		
-		getline(infile, str);
-		AddEdges(&G,&G.Nodes[SourceNodeIndex],&G.Nodes[DestNodeIndex], str);
-	};
+  getline(infile, str); // This should be the line with lambda.
+  EqualsIndex = str.find("=");
+  SemicolonIndex = str.find(";");
+  double Lambda = stof(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1)));
+  G.Lambda = Lambda;
+  
+  for (size_t i = 0; i != NodeCount; i++)
+  {
+    HomotopyNode NewNode(&G);
+    G.Nodes.push_back(NewNode);
+    G.Nodes[i].SolutionCount = G.RootCount;
+    for (size_t j = 0; j != G.Nodes[i].Solutions.size(); j++)
+      G.Nodes[i].Solutions[j] = true;
+  };
+  
+  while (getline(infile, str)) {
+    // Snag the correct nodes
+    size_t OpenParenIndex = str.find("(");
+    size_t CloseParenIndex = str.find(")");
+    size_t CommaIndex = str.find(",");
+    int SourceNodeIndex = stoi(str.substr(OpenParenIndex+1,CommaIndex - (OpenParenIndex + 1)));
+    int DestNodeIndex = stoi(str.substr(CommaIndex+1,CloseParenIndex - (CommaIndex + 1)));
+    
+    getline(infile, str);
+    AddEdges(&G,&G.Nodes[SourceNodeIndex],&G.Nodes[DestNodeIndex], str);
+  };
 
 #ifdef DEBUGGING
-	G.NoFailures = false; //!!! debugging
+  G.NoFailures = false; //!!! debugging
 #else
-	G.NoFailures = (G.Lambda==1);
+  G.NoFailures = (G.Lambda==1);
 #endif
-	return G;
+  return G;
 };
 
 //------------------------------------------------------------------------------
 // Computes the expected values for all edges going to node N.
 void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N)
 {
-	map<int,double> EdgeIncrements; // potE for each edge
+  map<int,double> EdgeIncrements; // potE for each edge
   N->ExpectedValue = N->SolutionCount; // that's it, when we're in serial
-	
+  
 #ifdef DEBUGGING
-	// debugging
-	for (auto& i : N->InwardTaskCounts)
-	{
-		//cerr << i.first << " ID  w " << i.second << "count" << endl;
-		if (i.second > 0)
-			cerr << G->Edges[i.first].ID << " has an inward task that contributes prob " << 1- G->Alpha * (double)(i.second) / (G->RootCount - G->Edges[i.first].SuccessfulCorrespondences) << endl;
-	}
-#endif
-	
-  // a loop that updates the expected value at node N when G->Alpha==1 and the expected number of failures at each edge (these are dependent when G->Alpha < 1)
-	for (auto& e : N->IncomingEdgeIDs)
-	{
-		HomotopyDirectedEdge& E = G->Edges[e];
-		E.ExpectedFailures = E.SourceFailures + (1-G->Alpha)*E.TrackerCount;
-		int Denominator = G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount - E.SourceFailures;
-		if (Denominator == 0 && G->Alpha == 1.0) // not a robust comparison for floats
-    {
-			// If the denominator is zero and there are no failures, this means that what is currently in progress
-			// plus what is already in the graph _should_ finish the node.
-			N->ExpectedValue = G->RootCount;
-			break;
-      }
-		N->ExpectedValue += (E.TrackerCount) * (G->Alpha) * (double)(G->RootCount - N->ExpectedValue) * (1 - E.ExpectedFailures / (double)(G->RootCount-E.SuccessfulCorrespondences)) / Denominator; // ie, zero in serial			
+  // debugging
+  for (auto& i : N->InwardTaskCounts)
+  {
+    //cerr << i.first << " ID  w " << i.second << "count" << endl;
+    if (i.second > 0)
+      cerr << G->Edges[i.first].ID << " has an inward task that contributes prob " << 1- G->Alpha * (double)(i.second) / (G->RootCount - G->Edges[i.first].SuccessfulCorrespondences) << endl;
   }
-	
-	// a loop that updates potE at incoming edges, plus N->ExpectedValue when G->Alpha <1 (even though not currently used)
-	for (auto& e : N->IncomingEdgeIDs)
-	{
-		HomotopyDirectedEdge& E = G->Edges[e]; 
-		EdgeIncrements[E.ID] = (G->RootCount == E.SuccessfulCorrespondences + E.TrackerCount + E.SourceFailures) ?
-	  -1 : // this edge is dead and the denominator below is 0
-		 (G->Alpha) * (double)(G->RootCount - N->ExpectedValue) * (1 - E.ExpectedFailures / (double)(G->RootCount-E.SuccessfulCorrespondences)) / (G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount - E.SourceFailures);
-		if (EdgeIncrements[E.ID] != -1 && EdgeIncrements[E.ID] <0)
-		  //cerr << " first " << (double)(G->RootCount - N->ExpectedValue - E.ExpectedFailures) << " second " << (1 - E.ExpectedFailures / (double)(G->RootCount-E.SuccessfulCorrespondences)) << endl;
-																															 //cerr << E.ID << " has crsps, fails, node ev" << E.SuccessfulCorrespondences << " , " << E.SourceFailures << " , " << N->ExpectedValue << endl;
+#endif
+  
+  // a loop that updates the expected value at node N when G->Alpha==1 and the expected number of failures at each edge (these are dependent when G->Alpha < 1)
+  for (auto& e : N->IncomingEdgeIDs)
+  {
+    HomotopyDirectedEdge& E = G->Edges[e];
+    E.ExpectedFailures = E.SourceFailures + (1-G->Alpha)*E.TrackerCount;
+    int Denominator = G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount - E.SourceFailures;
+    if (Denominator == 0 && G->Alpha == 1.0) // not a robust comparison for floats
+    {
+      // If the denominator is zero and there are no failures, this means that what is currently in progress
+      // plus what is already in the graph _should_ finish the node.
+      N->ExpectedValue = G->RootCount;
+      break;
+      }
+    N->ExpectedValue += (E.TrackerCount) * (G->Alpha) * (double)(G->RootCount - N->ExpectedValue) * (1 - E.ExpectedFailures / (double)(G->RootCount-E.SuccessfulCorrespondences)) / Denominator; // ie, zero in serial      
+  }
+  
+  // a loop that updates potE at incoming edges, plus N->ExpectedValue when G->Alpha <1 (even though not currently used)
+  for (auto& e : N->IncomingEdgeIDs)
+  {
+    HomotopyDirectedEdge& E = G->Edges[e]; 
+    EdgeIncrements[E.ID] = (G->RootCount == E.SuccessfulCorrespondences + E.TrackerCount + E.SourceFailures) ?
+    -1 : // this edge is dead and the denominator below is 0
+     (G->Alpha) * (double)(G->RootCount - N->ExpectedValue) * (1 - E.ExpectedFailures / (double)(G->RootCount-E.SuccessfulCorrespondences)) / (G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount - E.SourceFailures);
+    if (EdgeIncrements[E.ID] != -1 && EdgeIncrements[E.ID] <0)
+      //cerr << " first " << (double)(G->RootCount - N->ExpectedValue - E.ExpectedFailures) << " second " << (1 - E.ExpectedFailures / (double)(G->RootCount-E.SuccessfulCorrespondences)) << endl;
+                                                               //cerr << E.ID << " has crsps, fails, node ev" << E.SuccessfulCorrespondences << " , " << E.SourceFailures << " , " << N->ExpectedValue << endl;
       abort(); // this clearly should not happen
-	}					
+  }          
 
   
   // a loop that updates the potentials of edges pointing into N : depends on the actual potential function
 #ifdef VERBOSE
   cerr << "-- updating potential for edges directed towards node " << N->ID << endl;
   cerr << ">>> #Q: ";
-	for (auto& v : G->Nodes)
-		cerr << v.SolutionCount << " ";
-	cerr << "  #C: ";
-	for (auto& e : G->Edges)
-		cerr << e.SuccessfulCorrespondences << " ";
-	cerr << endl;
+  for (auto& v : G->Nodes)
+    cerr << v.SolutionCount << " ";
+  cerr << "  #C: ";
+  for (auto& e : G->Edges)
+    cerr << e.SuccessfulCorrespondences << " ";
+  cerr << endl;
 #endif
-	
+  
   for (auto& e : N->IncomingEdgeIDs)
   {
     HomotopyDirectedEdge& E = G->Edges[e];

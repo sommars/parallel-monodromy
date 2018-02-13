@@ -71,9 +71,9 @@ struct HomotopyTestSetup
   double Lambda;
   friend std::ostream& operator <<(std::ostream& os, HomotopyTestSetup const& Setup)
   {
-  	string SeedsStr;
-  	for (size_t i = 0; i != Setup.Seeds.size(); i++)
-  		SeedsStr += " " + to_string(Setup.Seeds[i]);
+    string SeedsStr;
+    for (size_t i = 0; i != Setup.Seeds.size(); i++)
+      SeedsStr += " " + to_string(Setup.Seeds[i]);
     return os << "---------HomotopyTestSetup---------" << endl
               << "RootCount: " << Setup.RootCount << endl
               << "NodeCount: " << Setup.NodeCount << endl

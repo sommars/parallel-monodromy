@@ -24,15 +24,15 @@ void PathFinished(HomotopyGraph* G, PathTracker* Tracker)
       TargetNode->Solutions[Tracker->C.DestSol] = true;
       TargetNode->SolutionCount++;
       for (set<int>::iterator it=TargetNode->OutgoingEdgeIDs.begin(); it!=TargetNode->OutgoingEdgeIDs.end(); it++)
-				{
-					HomotopyDirectedEdge &E = G->Edges[*it]; 
-					//cerr << "inserting " << Tracker->C.DestSol << " into ("<< E.SourceNodeID << "," << E.TargetNodeID << ")\n";
-					//if (E.Correspondences[Tracker->C.SourceSol].DestSol != -1) { // putting this in creates "collisions" unexplainably!!!
-					E.TrackableSolutions.insert(Tracker->C.DestSol); // don't perform this insertion if this solution has already failed along E
-					//} else {
-					//cerr << E.Correspondences[Tracker->C.SourceSol].DestSol << endl;
-					//	}
-				}
+      {
+        HomotopyDirectedEdge &E = G->Edges[*it]; 
+        //cerr << "inserting " << Tracker->C.DestSol << " into ("<< E.SourceNodeID << "," << E.TargetNodeID << ")\n";
+        //if (E.Correspondences[Tracker->C.SourceSol].DestSol != -1) { // putting this in creates "collisions" unexplainably!!!
+        E.TrackableSolutions.insert(Tracker->C.DestSol); // don't perform this insertion if this solution has already failed along E
+        //} else {
+        //cerr << E.Correspondences[Tracker->C.SourceSol].DestSol << endl;
+        //  }
+      }
       if (TargetNode->SolutionCount == G->RootCount)
         G->NumberOfCompleteNodes++;
     }
@@ -43,7 +43,7 @@ void PathFinished(HomotopyGraph* G, PathTracker* Tracker)
     E->SourceFailures++; // failures are one-way
   }
 
-	  
+    
   E->TrackerCount--;
   E->NumberOfAttempts++;
   ComputeExpectedValues(G, TargetNode);
@@ -83,11 +83,11 @@ bool TryChoosePath(HomotopyGraph* G, HomotopyGraph* CompletedG, PathTracker* Tra
   HomotopyDirectedEdge* E = &(G->Edges[*MaxEdgeIDs.begin()]);
   for (set<int>::iterator it=MaxEdgeIDs.begin(); it!=MaxEdgeIDs.end(); it++)
   {
-	if (G->Nodes[G->Edges[*it].TargetNodeID].SolutionCount > TargetCount)
-	  {
-		E = &(G->Edges[*it]);
-		TargetCount = G->Nodes[E->TargetNodeID].SolutionCount;
-	  }
+    if (G->Nodes[G->Edges[*it].TargetNodeID].SolutionCount > TargetCount)
+    {
+      E = &(G->Edges[*it]);
+      TargetCount = G->Nodes[E->TargetNodeID].SolutionCount;
+    }
   }
   E->TrackerCount++;
   
@@ -101,7 +101,7 @@ bool TryChoosePath(HomotopyGraph* G, HomotopyGraph* CompletedG, PathTracker* Tra
 
   Correspondence C;
   C.SourceSol = CompleteC.SourceSol;
-	C.IsFailure = CompleteC.IsFailure; //!!! this line was not there before
+  C.IsFailure = CompleteC.IsFailure; //!!! this line was not there before
   if (!C.IsFailure)
     C.DestSol = CompleteC.DestSol;
   C.TimeRequired = CompleteC.TimeRequired;

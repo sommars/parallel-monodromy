@@ -36,6 +36,7 @@ struct HomotopyDirectedEdge
   int OtherEdgeID;
   set<int> TrackableSolutions;
   double ExpectedValue;
+	double ExpectedFailures;
   int TrackerCount;
   int SuccessfulCorrespondences;
   int SourceFailures;

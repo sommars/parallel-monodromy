@@ -13,7 +13,7 @@ simulate = (a,inFilename,rootCount,nodeCount,e) -> ( --no more arguments please
 	else simInFile=inFilename;
 	outFilename = simInFile | ".out";
 	for i from 0 to (iterations -1) do (
-		run (codeDirectory|"pmonodromy "|simInFile|" 10 > " | outFilename);
+		run (codeDirectory|"pmonodromy "|simInFile|" 1 > " | outFilename);
 		l=(lines get outFilename);
 		output:=last l;
 		percentage:=replace("[^0-9]", "", output);
@@ -43,10 +43,13 @@ for e in edgeCounts do(
 	file = openOut (outputDirectory | e | "edges.csv");
 	file << "ntracks,tottime,suc,alpha" << endl;
 	createFakeGraph(rootCount,nodeCount,e,noFailureFile);
+	acc=0;
+	counter=0;
 	for a in reverse alphas do (
 		t=elapsedTime simulate(a,noFailureFile,rootCount,nodeCount,e);
-		print t;
-		print(toString(t#2/sub(iterations,RR)) | " % of trials succeeded ");
+		counter = counter +1;
+		acc = acc + t#2;
+		print(toString(acc/sub(counter,RR)) | " % of trials succeeded ");
 		if t#2 >= iterations/2 then color = 2
 		else if t#2 >= iterations/4 then color =1
 		  else color=0;
@@ -63,3 +66,4 @@ end
 
 restart
 load "graph.m2"
+

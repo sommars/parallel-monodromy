@@ -3,7 +3,7 @@
 //------------------------------------------------------------------------------
 void PrintHelp()
 {
-  ifstream f("README.md");
+  ifstream f("../README.md");
   cout << f.rdbuf();
 };
 
@@ -41,10 +41,18 @@ int main(int argc, char* argv[])
       throw invalid_argument("Please input a valid EVType. Options are Original, WeightTowardCompleteNode, ConvexCombination, and MixedStrategy");
   } else
     Setup.EVType = "Original";
-  
+
   if (argc > 4)
+    Setup.ComputeEVOption = stoi(argv[4]);
+    
+  if (argc > 5 && string(argv[5]) == "old")
+    Setup.UseOldEVs = true;
+  else
+    Setup.UseOldEVs = false;
+    
+  if (argc > 6)
   {
-    for (size_t i = 4; i != argc; i ++)
+    for (size_t i = 6; i != argc; i ++)
       Setup.Seeds.push_back(stoi(argv[i]));
   } else
     Setup.Seeds.push_back(-1);

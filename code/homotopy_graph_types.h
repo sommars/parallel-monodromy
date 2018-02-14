@@ -55,6 +55,8 @@ struct HomotopyGraph
   double Lambda;
   set<int> EdgesBeingTrackedIDs;
   string EVType;
+  int ComputeEVOption;
+  bool UseOldEVs;
   HomotopyGraph(int RC): RootCount(RC), NumberOfCompleteNodes(0) {};
 };
 

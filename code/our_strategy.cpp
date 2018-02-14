@@ -46,7 +46,41 @@ void PathFinished(HomotopyGraph* G, PathTracker* Tracker)
     
   E->TrackerCount--;
   E->NumberOfAttempts++;
-  ComputeExpectedValues(G, TargetNode);
+  
+  if (G->UseOldEVs == true) {
+    if (G->ComputeEVOption == 1)
+    {
+      ComputeExpectedValuesOLDWITHNOFAILURESONLY(G, TargetNode);
+    } else if (G->ComputeEVOption == 2)
+    {
+      ComputeExpectedValuesOLDWITHNOFAILURESONLY(G, TargetNode);
+      ComputeExpectedValuesOLDWITHNOFAILURESONLY(G, SourceNode);
+      
+    } else if (G->ComputeEVOption == 3)
+    {
+      for (size_t i = 0; i != G->Nodes.size(); i++)
+        ComputeExpectedValuesOLDWITHNOFAILURESONLY(G, &G->Nodes[i]);
+    }
+    else 
+      throw invalid_argument("Please input a valid EV Option.");
+  } else {
+    if (G->ComputeEVOption == 1)
+    {
+      ComputeExpectedValues(G, TargetNode);
+    } else if (G->ComputeEVOption == 2)
+    {
+      ComputeExpectedValues(G, TargetNode);
+      ComputeExpectedValues(G, SourceNode);
+      
+    } else if (G->ComputeEVOption == 3)
+    {
+      for (size_t i = 0; i != G->Nodes.size(); i++)
+        ComputeExpectedValues(G, &G->Nodes[i]);
+    }
+    else 
+      throw invalid_argument("Please input a valid EV Option.");
+  }
+  
 };
 
 //------------------------------------------------------------------------------

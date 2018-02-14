@@ -158,8 +158,16 @@ HomotopyGraph InitializeEmptyGraphFromCompletedGraph(HomotopyGraph* CompletedG)
     };
   }
 
+  G.ComputeEVOption = CompletedG->ComputeEVOption;
+  G.UseOldEVs = CompletedG->UseOldEVs;
+
   for (size_t i = 0; i != G.Nodes.size(); i++)
-    ComputeExpectedValues(&G, &G.Nodes[i]);
+  {
+    if (G.UseOldEVs == true)
+      ComputeExpectedValuesOLDWITHNOFAILURESONLY(&G, &G.Nodes[i]);
+    else
+      ComputeExpectedValues(&G, &G.Nodes[i]);
+  };
   
 #ifdef VERBOSE
   cerr << "-------------expected values initialized------------" << endl;
@@ -311,7 +319,7 @@ void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N)
 #ifdef VERBOSE
     cerr << "Edge with ID " << E.ID << " tracking from "<< E.SourceNodeID << " to " << E.TargetNodeID << " has E.V. = " << E.ExpectedValue << "\n";
 #endif
-  }  
+  }
 };
 
 //------------------------------------------------------------------------------

@@ -69,6 +69,8 @@ struct HomotopyTestSetup
   vector<int64_t> Seeds;
   double Alpha;
   double Lambda;
+  int ComputeEVOption;
+  bool UseOldEVs;
   friend std::ostream& operator <<(std::ostream& os, HomotopyTestSetup const& Setup)
   {
     string SeedsStr;
@@ -81,7 +83,9 @@ struct HomotopyTestSetup
               << "TrialCount: " << Setup.TrialCount << endl
               << "Alpha: " << Setup.Alpha << endl
               << "Seeds:" << SeedsStr << endl
-              << "EVType: " << Setup.EVType << endl << endl;
+              << "EVType: " << Setup.EVType << endl
+              << "Option:" << Setup.ComputeEVOption << endl
+              << "UseOldEVs: " << Setup.UseOldEVs << endl << endl << endl; 
   }
 };
 

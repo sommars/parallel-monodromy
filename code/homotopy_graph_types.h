@@ -98,3 +98,6 @@ HomotopyGraph InitializeGraphFromFile(string &FileName, int seed);
 
 //------------------------------------------------------------------------------
 void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N);
+
+//------------------------------------------------------------------------------
+void ComputeExpectedValuesOLDWITHNOFAILURESONLY(HomotopyGraph* G, HomotopyNode* N);

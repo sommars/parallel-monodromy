@@ -313,3 +313,111 @@ void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N)
 #endif
   }  
 };
+
+//------------------------------------------------------------------------------
+// Computes the expected values for all edges going to node N.
+void ComputeExpectedValuesOLDWITHNOFAILURESONLY(HomotopyGraph* G, HomotopyNode* N)
+{
+	map<int,double> EdgeIncrements; // potE for each edge
+  N->ExpectedValue = N->SolutionCount; // that's it, when we're in serial
+
+#ifdef DEBUGGING
+	// debugging
+	for (auto& i : N->InwardTaskCounts)
+	{
+		//cerr << i.first << " ID  w " << i.second << "count" << endl;
+		if (i.second > 0)
+			cerr << G->Edges[i.first].ID << " has an inward task that contributes prob " << 1- G->Alpha * (double)(i.second) / (G->RootCount - G->Edges[i.first].SuccessfulCorrespondences) << endl;
+	}
+#endif
+	
+  // a loop that updates the expected value at node N when G->Alpha==1 (the only case in which it is currently needed)
+	if (G->NoFailures) // ... display (6) in the paper
+  {
+		for (auto& e : N->IncomingEdgeIDs)
+		{
+		  HomotopyDirectedEdge& E = G->Edges[e];  
+		  int Denominator = G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount;
+      if (Denominator == 0)
+      {
+	      // If the denominator is zero and there are no failures, this means that what is currently in progress
+      	// plus what is already in the graph _should_ finish the node.
+	      N->ExpectedValue = G->RootCount;
+	      break;
+      }
+      N->ExpectedValue += (E.TrackerCount) * ((double)(G->RootCount - N->ExpectedValue))/Denominator; // ie, zero in serial
+    }			
+  }
+	
+	// a loop that updates potE at incoming edges, plus N->ExpectedValue when G->Alpha <1 (even though not currently used)
+	for (auto& e : N->IncomingEdgeIDs)
+	{
+		HomotopyDirectedEdge& E = G->Edges[e];
+		if (G->NoFailures)
+		{
+      EdgeIncrements[E.ID] = (G->RootCount == E.SuccessfulCorrespondences + E.TrackerCount) ?
+	    -1 : // this edge is dead and the denominator below is 0
+	    (double)(G->RootCount - N->ExpectedValue) / (double)(G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount);
+    }
+		else
+		{
+			if (G->RootCount - N->SolutionCount - E.SourceFailures == 0 || G->RootCount - N->SolutionCount - E.SourceFailures == 0)
+			{
+				EdgeIncrements[E.ID] = -1; // edge is dead
+			}
+			  else
+			{
+				double LogIncrement = log(G->Alpha) + log( (double)(G->RootCount - N->SolutionCount - E.SourceFailures + ((N->SolutionCount * E.SourceFailures)/(G->RootCount -E.SuccessfulCorrespondences))) / (G->RootCount - E.SuccessfulCorrespondences - E.SourceFailures));
+				if (isnan(LogIncrement)) {
+					cerr << E.SuccessfulCorrespondences + E.SourceFailures << " failures + corresps " << " at edge ID " << E.ID << " from " << E.SourceNodeID << " to " << E.TargetNodeID << endl;
+					abort();
+        }
+				for (auto& i : N->InwardTaskCounts)
+        {
+          if (i.second > 0 && i.first != E.ID) // if there is a competing task count at E, which implies the correspondences at E are not complete
+					  LogIncrement += (i.second == G->RootCount - G->Edges[i.first].SuccessfulCorrespondences) ?
+					  0 : // all correspondences at this competing edge are either found or currently scheduled
+					  log(1- G->Alpha * (double)(i.second) / (G->RootCount - G->Edges[i.first].SuccessfulCorrespondences));
+        }
+        EdgeIncrements[E.ID] = exp(LogIncrement);
+			  // N->ExpectedValue += (E.TrackerCount)*EdgeIncrements[E.ID]; // !!!not currently used for anything
+			}
+    }
+		if (EdgeIncrements[E.ID] > 1)
+			abort();
+	}					
+
+  
+  // a loop that updates the potentials of edges pointing into N : depends on the actual potential function
+#ifdef VERBOSE
+  cerr << "-- updating potential for edges directed towards node " << N->ID << endl;
+  cerr << ">>> #Q: ";
+	for (auto& v : G->Nodes)
+		cerr << v.SolutionCount << " ";
+	cerr << "  #C: ";
+	for (auto& e : G->Edges)
+		cerr << e.SuccessfulCorrespondences << " ";
+	cerr << endl;
+#endif
+	
+  for (auto& e : N->IncomingEdgeIDs)
+  {
+    HomotopyDirectedEdge& E = G->Edges[e];
+#ifdef VERBOSE
+    cerr <<  "E.ID = " << E.ID << " from " << E.SourceNodeID << " to " << E.TargetNodeID << " w/ prob " << EdgeIncrements[E.ID] << " : |Ce|, |E_v| = " << E.SuccessfulCorrespondences << " , " << N->ExpectedValue << endl;
+#endif
+    double pOriginal = EdgeIncrements[E.ID];
+    double pWeightTowardCompleteNode = 1/(E.TargetNodeID+1.0); // pot-lex
+    if (G->EVType=="Original")
+      E.ExpectedValue = pOriginal;
+    else if (G->EVType=="WeightTowardCompleteNode") // !!! should rename
+      E.ExpectedValue = pWeightTowardCompleteNode;
+    else if(G->EVType=="ConvexCombination") // !!! should rename
+      E.ExpectedValue = pow((double)G->Nodes[E.TargetNodeID].SolutionCount/(double)G->RootCount,G->Lambda) * pOriginal; 
+    else 
+      cerr << "Invalid option in ComputeExpectedValues: " << G->EVType << endl;
+#ifdef VERBOSE
+    cerr << "Edge with ID " << E.ID << " tracking from "<< E.SourceNodeID << " to " << E.TargetNodeID << " has E.V. = " << E.ExpectedValue << "\n";
+#endif
+  }  
+};

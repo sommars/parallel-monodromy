@@ -255,7 +255,7 @@ void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N)
   {
     HomotopyDirectedEdge& E = G->Edges[e];
     E.ExpectedFailures = E.SourceFailures + (1-G->Alpha)*E.TrackerCount;
-    int Denominator = G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount - E.SourceFailures;
+    int Denominator = G->RootCount - E.SuccessfulCorrespondences - E.SourceFailures;
     if (Denominator == 0 && G->Alpha == 1.0) // not a robust comparison for floats
     {
       // If the denominator is zero and there are no failures, this means that what is currently in progress
@@ -321,6 +321,11 @@ void ComputeExpectedValuesOLDWITHNOFAILURESONLY(HomotopyGraph* G, HomotopyNode* 
 	map<int,double> EdgeIncrements; // potE for each edge
   N->ExpectedValue = N->SolutionCount; // that's it, when we're in serial
 
+  if (G->Alpha < 1.0)
+  {
+    cout << "Error: ComputeExpectedValuesOLDWITHNOFAILURESONLY called with alpha <> 1" << endl;
+    abort();
+  };
 #ifdef DEBUGGING
 	// debugging
 	for (auto& i : N->InwardTaskCounts)
@@ -332,22 +337,19 @@ void ComputeExpectedValuesOLDWITHNOFAILURESONLY(HomotopyGraph* G, HomotopyNode* 
 #endif
 	
   // a loop that updates the expected value at node N when G->Alpha==1 (the only case in which it is currently needed)
-	if (G->NoFailures) // ... display (6) in the paper
-  {
-		for (auto& e : N->IncomingEdgeIDs)
-		{
-		  HomotopyDirectedEdge& E = G->Edges[e];  
-		  int Denominator = G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount;
-      if (Denominator == 0)
-      {
-	      // If the denominator is zero and there are no failures, this means that what is currently in progress
-      	// plus what is already in the graph _should_ finish the node.
-	      N->ExpectedValue = G->RootCount;
-	      break;
-      }
-      N->ExpectedValue += (E.TrackerCount) * ((double)(G->RootCount - N->ExpectedValue))/Denominator; // ie, zero in serial
-    }			
-  }
+	for (auto& e : N->IncomingEdgeIDs)
+	{
+	  HomotopyDirectedEdge& E = G->Edges[e];
+	  int Denominator = G->RootCount - E.SuccessfulCorrespondences;
+    if (Denominator == 0)
+    {
+      // If the denominator is zero and there are no failures, this means that what is currently in progress
+    	// plus what is already in the graph _should_ finish the node.
+      N->ExpectedValue = G->RootCount;
+      break;
+    }
+    N->ExpectedValue += (E.TrackerCount) * ((double)(G->RootCount - N->ExpectedValue))/Denominator; // ie, zero in serial
+  }			
 	
 	// a loop that updates potE at incoming edges, plus N->ExpectedValue when G->Alpha <1 (even though not currently used)
 	for (auto& e : N->IncomingEdgeIDs)
@@ -358,30 +360,6 @@ void ComputeExpectedValuesOLDWITHNOFAILURESONLY(HomotopyGraph* G, HomotopyNode* 
       EdgeIncrements[E.ID] = (G->RootCount == E.SuccessfulCorrespondences + E.TrackerCount) ?
 	    -1 : // this edge is dead and the denominator below is 0
 	    (double)(G->RootCount - N->ExpectedValue) / (double)(G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount);
-    }
-		else
-		{
-			if (G->RootCount - N->SolutionCount - E.SourceFailures == 0 || G->RootCount - N->SolutionCount - E.SourceFailures == 0)
-			{
-				EdgeIncrements[E.ID] = -1; // edge is dead
-			}
-			  else
-			{
-				double LogIncrement = log(G->Alpha) + log( (double)(G->RootCount - N->SolutionCount - E.SourceFailures + ((N->SolutionCount * E.SourceFailures)/(G->RootCount -E.SuccessfulCorrespondences))) / (G->RootCount - E.SuccessfulCorrespondences - E.SourceFailures));
-				if (isnan(LogIncrement)) {
-					cerr << E.SuccessfulCorrespondences + E.SourceFailures << " failures + corresps " << " at edge ID " << E.ID << " from " << E.SourceNodeID << " to " << E.TargetNodeID << endl;
-					abort();
-        }
-				for (auto& i : N->InwardTaskCounts)
-        {
-          if (i.second > 0 && i.first != E.ID) // if there is a competing task count at E, which implies the correspondences at E are not complete
-					  LogIncrement += (i.second == G->RootCount - G->Edges[i.first].SuccessfulCorrespondences) ?
-					  0 : // all correspondences at this competing edge are either found or currently scheduled
-					  log(1- G->Alpha * (double)(i.second) / (G->RootCount - G->Edges[i.first].SuccessfulCorrespondences));
-        }
-        EdgeIncrements[E.ID] = exp(LogIncrement);
-			  // N->ExpectedValue += (E.TrackerCount)*EdgeIncrements[E.ID]; // !!!not currently used for anything
-			}
     }
 		if (EdgeIncrements[E.ID] > 1)
 			abort();

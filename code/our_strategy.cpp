@@ -8,7 +8,7 @@ void PathFinished(HomotopyGraph* G, PathTracker* Tracker)
   HomotopyDirectedEdge* OtherE = &(G->Edges[E->OtherEdgeID]);
   HomotopyNode* TargetNode = &(G->Nodes[E->TargetNodeID]);
   HomotopyNode* SourceNode = &(G->Nodes[E->SourceNodeID]);
-  // cerr << "PathFinished >>> ("<< E->SourceNodeID << "," << E->TargetNodeID << ")" << endl;
+  cerr << "PathFinished >>> ("<< E->SourceNodeID << "," << E->TargetNodeID << ")" << endl;
   E->Correspondences[Tracker->StartSolution] = Tracker->C;
   if (!Tracker->C.IsFailure)  //i.e. not a failed track
   {

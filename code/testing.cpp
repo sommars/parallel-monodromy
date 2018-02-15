@@ -47,6 +47,15 @@ HomotopyRunData SimulateRun(HomotopyGraph* CompletedG, HomotopyGraph* FuzzyG, in
         FuzzyG->Nodes[FuzzyG->Edges[T.EdgeID].TargetNodeID].InwardTaskCounts[T.EdgeID] += 1;
       else
         FuzzyG->Nodes[FuzzyG->Edges[T.EdgeID].TargetNodeID].InwardTaskCounts[T.EdgeID] = 1;
+      
+      if (FuzzyG->UseOldEVs == true) {
+        ComputeExpectedValuesOLDWITHNOFAILURESONLY(FuzzyG, &FuzzyG->Nodes[FuzzyG->Edges[T.EdgeID].TargetNodeID]);
+        ComputeExpectedValuesOLDWITHNOFAILURESONLY(FuzzyG, &FuzzyG->Nodes[FuzzyG->Edges[T.EdgeID].SourceNodeID]);
+      } else {
+        ComputeExpectedValues(FuzzyG, &FuzzyG->Nodes[FuzzyG->Edges[T.EdgeID].TargetNodeID]);
+        ComputeExpectedValues(FuzzyG, &FuzzyG->Nodes[FuzzyG->Edges[T.EdgeID].SourceNodeID]);
+      };
+
     };
     if (CurrentTrackerSet.size() == 0)
     {

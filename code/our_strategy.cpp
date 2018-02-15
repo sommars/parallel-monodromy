@@ -1,4 +1,4 @@
-//#define VERBOSE
+#define VERBOSE
 #include "our_strategy.h"
 
 //------------------------------------------------------------------------------
@@ -46,7 +46,17 @@ void PathFinished(HomotopyGraph* G, PathTracker* Tracker)
     
   E->TrackerCount--;
   E->NumberOfAttempts++;
-  
+
+#ifdef VERBOSE
+  cerr << ">>> #Q: ";
+  for (auto& v : G->Nodes)
+    cerr << v.SolutionCount << " ";
+  cerr << "  #C: ";
+  for (auto& E : G->Edges)
+    cerr << "(" << E.SuccessfulCorrespondences << E.TrackerCount << ") ";
+  cerr << endl;
+#endif	
+
   if (G->UseOldEVs == true) {
     if (G->ComputeEVOption == 1)
     {

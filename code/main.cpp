@@ -17,45 +17,85 @@ int main(int argc, char* argv[])
   };
   
   HomotopyTestSetup Setup;
-  Setup.FileName = argv[1];
+  Setup.ThreadCount = 1;
+  Setup.EVType = "Original";
+  Setup.ComputeEVOption = 2;
+  Setup.UseOldEVs = false;
   
-  if (argc > 2)
-    Setup.ThreadCount = atoi(argv[2]);
-  else
-    Setup.ThreadCount = 1;
-    
-  if (argc > 3)
+  string FileName = string(argv[1]);
+  ifstream f(FileName.c_str());
+  if (!f.good())
+    throw invalid_argument("Please input a valid filename.");
+  Setup.FileName = FileName;
+  
+  try
   {
-    // Let's not require the correct casing.
-    string EVType = argv[3];
-    transform(EVType.begin(), EVType.end(), EVType.begin(), ::tolower);
-    if (EVType == "original")
-      Setup.EVType = "Original";
-    else if (EVType == "weighttowardcompletenode")
-      Setup.EVType = "WeightTowardCompleteNode";
-    else if (EVType == "convexcombination")
-      Setup.EVType = "ConvexCombination";
-    else if (EVType == "mixedstrategy")
-      Setup.EVType = "MixedStrategy";    
-    else
-      throw invalid_argument("Please input a valid EVType. Options are Original, WeightTowardCompleteNode, ConvexCombination, and MixedStrategy");
-  } else
-    Setup.EVType = "Original";
-
-  if (argc > 4)
-    Setup.ComputeEVOption = stoi(argv[4]);
-    
-  if (argc > 5 && string(argv[5]) == "old")
-    Setup.UseOldEVs = true;
-  else
-    Setup.UseOldEVs = false;
-    
-  if (argc > 6)
+    for (size_t i = 2; i < argc; )
+    {
+      string Option = string(argv[i]);
+      if (Option == "-old")
+      {
+        Setup.UseOldEVs = true;
+      };
+      
+      if ((i+1) == argc)
+        throw 1;
+      if (Option == "-t")
+      {
+        Setup.ThreadCount = atoi(argv[i+1]);
+        i++;
+        i++;
+      } else if (Option == "-e")
+      {
+        string EVType = argv[i+1];
+        transform(EVType.begin(), EVType.end(), EVType.begin(), ::tolower);
+        if (EVType == "original")
+          Setup.EVType = "Original";
+        else if (EVType == "weighttowardcompletenode")
+          Setup.EVType = "WeightTowardCompleteNode";
+        else if (EVType == "convexcombination")
+          Setup.EVType = "ConvexCombination";
+        else if (EVType == "mixedstrategy")
+          Setup.EVType = "MixedStrategy";    
+        else
+          throw invalid_argument("Please input a valid EVType. Options are Original, WeightTowardCompleteNode, ConvexCombination, and MixedStrategy");
+        i++;
+        i++;
+      } else if (Option == "-s")
+      {
+        Setup.Seeds.push_back(atoi(argv[i+1]));
+        i++;
+        i++;
+      } else if (Option == "-EVOpt")
+      {
+        Setup.ComputeEVOption = atoi(argv[i+1]);
+        i++;
+        i++;
+      } else if (Option == "-a")
+      {
+        Setup.Alpha = stold(argv[i+1]);
+        i++;
+        i++;
+      } else if (Option == "-l")
+      {
+        Setup.Lambda = stold(argv[i+1]);
+        i++;
+        i++;
+      };
+    };
+  } catch (...)
   {
-    for (size_t i = 6; i != argc; i ++)
-      Setup.Seeds.push_back(stoi(argv[i]));
-  } else
-    Setup.Seeds.push_back(-1);
+    cout << "Invalid input, please see instructions." << endl << endl;
+    usleep(100000);
+    PrintHelp();
+    abort();
+  };
+  
+  if (Setup.Seeds.size() == 0)
+  {
+    random_device rd;
+    Setup.Seeds.push_back(rd());
+  };
   
   AverageHomotopyData Data = AverageTests(&Setup);
   cout << Setup;

@@ -21,8 +21,6 @@ createRealGraphM2timingsWithNoOverheadPart1 (PolySystem, ZZ, ZZ, String) := o ->
 	<< toExternalString(P) << endl
 	<< "Root count = " << rootCount << ";" << endl
 	<< "Node count = " << #(V#Graph#Vertices) << ";" << endl
-	<< "Alpha = 1;" << endl;
-	outFile << "Lambda = " << o.lambda << ";" << endl;
 
 	for i from 0 to #(V#Graph#Edges) - 1 do (
 	    startSystemIndex = basePointToIndexMap#(V#Graph#Edges#i#Node1#BasePoint);
@@ -110,8 +108,6 @@ createFakeGraph (ZZ, ZZ, ZZ, String) := o -> (RootCount,NodeCount,EdgeCount,file
 	<< "Edge count = " << EdgeCount << ";" << endl
 	<< "Root count = " << RootCount << ";" << endl
 	<< "Node count = " << NodeCount << ";" << endl
-	<< "Alpha = " << o.alpha << ";" << endl
-	<< "Lambda = " << o.lambda <<  ";" << endl;
 	
 	failCount = 0;
 	corrCount = 0;

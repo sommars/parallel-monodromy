@@ -77,6 +77,7 @@ struct HomotopyTestSetup
     for (size_t i = 0; i != Setup.Seeds.size(); i++)
       SeedsStr += " " + to_string(Setup.Seeds[i]);
     return os << "---------HomotopyTestSetup---------" << endl
+              << "FileName: " << Setup.FileName << endl
               << "RootCount: " << Setup.RootCount << endl
               << "NodeCount: " << Setup.NodeCount << endl
               << "ThreadCount: " << Setup.ThreadCount << endl
@@ -84,7 +85,7 @@ struct HomotopyTestSetup
               << "Alpha: " << Setup.Alpha << endl
               << "Seeds:" << SeedsStr << endl
               << "EVType: " << Setup.EVType << endl
-              << "Option:" << Setup.ComputeEVOption << endl
+              << "Option: " << Setup.ComputeEVOption << endl
               << "UseOldEVs: " << Setup.UseOldEVs << endl << endl << endl; 
   }
 };

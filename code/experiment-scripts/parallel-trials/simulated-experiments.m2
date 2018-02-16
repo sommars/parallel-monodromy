@@ -24,7 +24,7 @@ for RootCount in RootCounts do (
         for RandomSeed from 0 to TrialCount do (
             filename = RootCount | "Solution" | RandomSeed | "Seedfakegraph.graph";
             outfilename = filename | ThreadCount | "Threads.out";
-            run ("../../pmonodromy " | filename | " " | ThreadCount | " Original 1 2 3 4 5 6 7 8 9 10 > " | outfilename);
+            run ("../../pmonodromy " | filename | " -t " | ThreadCount | " -e Original -s 1 -s 2 -s 3 -s 4 -s 5 -s 6 -s 7 -s 8 -s 9 -s 10 > " | outfilename);
             TempValue = TempValue + value(substring((lines get outfilename)#-6,11));
             run("rm " | outfilename);
         );

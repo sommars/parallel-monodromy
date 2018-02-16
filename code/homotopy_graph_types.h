@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iomanip>
 #include <locale>
+#include <unistd.h>
 
 using namespace std;
 

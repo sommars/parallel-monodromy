@@ -105,16 +105,13 @@ HomotopyRunData SimulateRun(HomotopyGraph* CompletedG, HomotopyGraph* FuzzyG, in
 //------------------------------------------------------------------------------
 HomotopyRunData SetUpAndRun(HomotopyTestSetup* Setup)
 {
-  
-  if (Setup->Seeds[Setup->TrialIndex] == -1)
-  {
-    random_device rd;
-    Setup->Seeds[Setup->TrialIndex] = rd();
-   };
   HomotopyGraph CompletedGraph = InitializeGraphFromFile(Setup->FileName, Setup->Seeds[Setup->TrialIndex]);
   CompletedGraph.EVType = Setup->EVType;
   CompletedGraph.ComputeEVOption = Setup->ComputeEVOption;
   CompletedGraph.UseOldEVs = Setup->UseOldEVs;
+  CompletedGraph.Alpha = Setup->Alpha;
+  CompletedGraph.Lambda = Setup->Lambda;
+  
   Setup->RootCount = CompletedGraph.RootCount;
   Setup->NodeCount = CompletedGraph.Nodes.size();
   Setup->Alpha = CompletedGraph.Alpha;

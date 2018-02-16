@@ -34,17 +34,18 @@ calling setDefault before `createRealGraph`
 Now that a graph file has been created, we can use `pmonodromy` to experiment
 with the graph (note that before it is first used, it must be made through
 calling `make` in this directory). `pmonodromy` requires a series of 
-arguments to run:
-* The first argument is a file name.
-* The second is the number of simulated threads. (1)
-* The third is a type of potential function. Options are Original, WeightTowardCompleteNode, ConvexCombination, and MixedStrategy. (Original)
-* The "fourth" is a list of random seeds. This is not very robust: it should be a list of positive integers separated by spaces. (If not specified, a single random seed will be used)
+arguments to run, the first of which is a file name. All
+remaining parameters are optional; the default values are given in parentheses.
+* `-t X` runs `pmonodromy` with `X` simulated threads. (1)
+* `-e X` runs `pmonodromy` with potential function `X`. Options are Original, WeightTowardCompleteNode, ConvexCombination, and MixedStrategy. (Original)
+* `-s X` runs `pmonodromy` with random seed `X`. If this is used multiple times, multiple random seeds will be used. (Random).
+* `-a X` runs `pmonodromy` with Alpha = `X`. (1)
+* `-l X` runs `pmonodromy` with Lambda = `X`.
 
-Note that it is not possible to set the fifth option without setting the third, for example. The default values are given in parentheses.
 Here is a sample run: 
 
-```./pmonodromy sample.graph 16 Original 123 47 1 10094```
+```./pmonodromy sample.graph -e Original -s 123 -s 47 -t 16```
 
 Calling this runs `pmonodromy` on a fictious file sample.graph, with 16
 threads, using the Original potential function, for random seeds
-123 47 1 10094.
+123 and 47.

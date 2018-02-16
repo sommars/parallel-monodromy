@@ -200,18 +200,6 @@ HomotopyGraph InitializeGraphFromFile(string &FileName, int seed)
   SemicolonIndex = str.find(";");
   int NodeCount = stoi(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1)));
   
-  getline(infile, str); // This should be the line with alpha.
-  EqualsIndex = str.find("=");
-  SemicolonIndex = str.find(";");
-  double Alpha = stof(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1)));
-  G.Alpha = Alpha;
-
-  getline(infile, str); // This should be the line with lambda.
-  EqualsIndex = str.find("=");
-  SemicolonIndex = str.find(";");
-  double Lambda = stof(str.substr(EqualsIndex+1,SemicolonIndex - (EqualsIndex + 1)));
-  G.Lambda = Lambda;
-  
   for (size_t i = 0; i != NodeCount; i++)
   {
     HomotopyNode NewNode(&G);

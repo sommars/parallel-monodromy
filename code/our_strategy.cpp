@@ -47,16 +47,17 @@ void PathFinished(HomotopyGraph* G, PathTracker* Tracker)
   E->TrackerCount--;
   E->NumberOfAttempts++;
 
-#ifdef VERBOSE
-  cerr << ">>> #Q: ";
-  for (auto& v : G->Nodes)
-    cerr << v.SolutionCount << " ";
-  cerr << "  #C: ";
-  for (auto& E : G->Edges)
-    cerr << "(" << E.SuccessfulCorrespondences << E.TrackerCount << ") ";
-  cerr << endl;
-#endif	
-
+  if (Verbose)
+  {
+    cerr << ">>> #Q: ";
+    for (auto& v : G->Nodes)
+      cerr << v.SolutionCount << " ";
+    cerr << "  #C: ";
+    for (auto& E : G->Edges)
+      cerr << "(" << E.SuccessfulCorrespondences << E.TrackerCount << ") ";
+    cerr << endl;
+  };
+  
   if (G->UseOldEVs == true) {
     if (G->ComputeEVOption == 1)
     {
@@ -99,18 +100,23 @@ bool TryChoosePath(HomotopyGraph* G, HomotopyGraph* CompletedG, PathTracker* Tra
 {
   double MaxExpectedVal = 0;
   set<int> MaxEdgeIDs;
-#ifdef VERBOSE
-  cerr << "-- trying to choose...\n";
-#endif
+  
+  if (Verbose)
+  {
+    cerr << "-- trying to choose...\n";
+  };
+
   for (size_t i = 0; i != G->Edges.size(); i++)
   {
     HomotopyDirectedEdge* E = &(G->Edges[i]);
     if (E->TrackableSolutions.size() == 0)
       continue;
-#ifdef VERBOSE
+  if (Verbose)
+  {
     cerr << "Edge with ID " << E->ID << " had E("<< E->SourceNodeID << "," << E->TargetNodeID << ")->EV = " << E->ExpectedValue << endl;
-#endif
-    if (E->ExpectedValue > MaxExpectedVal)
+  };
+  
+  if (E->ExpectedValue > MaxExpectedVal)
     {
       MaxExpectedVal = E->ExpectedValue;
       MaxEdgeIDs.clear();
@@ -151,8 +157,10 @@ bool TryChoosePath(HomotopyGraph* G, HomotopyGraph* CompletedG, PathTracker* Tra
   C.TimeRequired = CompleteC.TimeRequired;
   Tracker->C = C;
   Tracker->TimeLeft = C.TimeRequired;
-#ifdef VERBOSE
-  cerr << "chose (" << E->SourceNodeID << "," << E->TargetNodeID << ")\n";
-#endif
+  
+  if (Verbose)
+  {
+    cerr << "chose (" << E->SourceNodeID << "," << E->TargetNodeID << ")\n";
+  }
   return true;
 };

@@ -21,6 +21,7 @@ int main(int argc, char* argv[])
   Setup.EVType = "Original";
   Setup.ComputeEVOption = 2;
   Setup.UseOldEVs = false;
+  Setup.Alpha = 1;
   
   string FileName = string(argv[1]);
   ifstream f(FileName.c_str());
@@ -36,7 +37,15 @@ int main(int argc, char* argv[])
       if (Option == "-old")
       {
         Setup.UseOldEVs = true;
+        i++;
+        continue;
+      } else if (Option == "-v")
+      {
+        Verbose = true; 
+        i++;
+        continue;
       };
+      
       
       if ((i+1) == argc)
         throw 1;

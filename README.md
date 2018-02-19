@@ -41,6 +41,7 @@ remaining parameters are optional; the default values are given in parentheses.
 * `-s X` runs `pmonodromy` with random seed `X`. If this is used multiple times, multiple random seeds will be used. (Random).
 * `-a X` runs `pmonodromy` with Alpha = `X`. (1)
 * `-l X` runs `pmonodromy` with Lambda = `X`.
+* `-v` runs `pmonodromy` verbosely, with output about which edge it is selecting.
 
 Here is a sample run: 
 

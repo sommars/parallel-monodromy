@@ -15,6 +15,8 @@
 
 using namespace std;
 
+extern bool Verbose;
+
 extern mt19937 mt; //global RNG to avoid copying it
 typedef struct HomotopyNode HomotopyNode;
 
@@ -51,7 +53,6 @@ struct HomotopyGraph
   vector<HomotopyNode> Nodes;
   vector<HomotopyDirectedEdge> Edges;
   int NumberOfCompleteNodes;
-  bool NoFailures;
   double Alpha;
   double Lambda;
   set<int> EdgesBeingTrackedIDs;

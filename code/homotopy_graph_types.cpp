@@ -223,6 +223,20 @@ HomotopyGraph InitializeGraphFromFile(string &FileName, int seed)
 };
 
 //------------------------------------------------------------------------------
+void PrintEdgeSelectionDetails(HomotopyGraph* G, HomotopyDirectedEdge* E, HomotopyNode* N, double Probability)
+{
+  cerr << "-- updating potential for edges directed towards node " << N->ID << endl;
+  cerr << ">>> #Q: ";
+  for (auto& v : G->Nodes)
+    cerr << v.SolutionCount << " ";
+  cerr << "  #C: ";
+  for (auto& e : G->Edges)
+    cerr << e.SuccessfulCorrespondences << " ";
+  cerr << endl;
+  cerr <<  "E.ID = " << E->ID << " from " << E->SourceNodeID << " to " << E->TargetNodeID << " w/ prob " << Probability << " : |Ce|, |E_v| = " << E->SuccessfulCorrespondences << " , " << N->ExpectedValue << endl;
+};
+
+//------------------------------------------------------------------------------
 // Computes the expected values for all edges going to node N.
 void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N)
 {
@@ -268,17 +282,7 @@ void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N)
       abort(); // this clearly should not happen
 
     if (Verbose)
-    {
-      cerr << "-- updating potential for edges directed towards node " << N->ID << endl;
-      cerr << ">>> #Q: ";
-      for (auto& v : G->Nodes)
-        cerr << v.SolutionCount << " ";
-      cerr << "  #C: ";
-      for (auto& e : G->Edges)
-        cerr << e.SuccessfulCorrespondences << " ";
-      cerr << endl;
-      cerr <<  "E.ID = " << E.ID << " from " << E.SourceNodeID << " to " << E.TargetNodeID << " w/ prob " << EdgeIncrements[E.ID] << " : |Ce|, |E_v| = " << E.SuccessfulCorrespondences << " , " << N->ExpectedValue << endl;
-    };
+      PrintEdgeSelectionDetails(G,&E,N,EdgeIncrements[E.ID]);
   
     double pOriginal = EdgeIncrements[E.ID];
     double pWeightTowardCompleteNode = 1/(E.TargetNodeID+1.0); // pot-lex
@@ -344,17 +348,7 @@ void ComputeExpectedValuesOLDWITHNOFAILURESONLY(HomotopyGraph* G, HomotopyNode* 
       abort();
       
     if (Verbose)
-    {
-      cerr << "-- updating potential for edges directed towards node " << N->ID << endl;
-      cerr << ">>> #Q: ";
-      for (auto& v : G->Nodes)
-        cerr << v.SolutionCount << " ";
-      cerr << "  #C: ";
-      for (auto& e : G->Edges)
-        cerr << e.SuccessfulCorrespondences << " ";
-      cerr << endl;
-      cerr <<  "E.ID = " << E.ID << " from " << E.SourceNodeID << " to " << E.TargetNodeID << " w/ prob " << EdgeIncrements[E.ID] << " : |Ce|, |E_v| = " << E.SuccessfulCorrespondences << " , " << N->ExpectedValue << endl;
-    };
+      PrintEdgeSelectionDetails(G,&E,N,EdgeIncrements[E.ID]);
     
     double pOriginal = EdgeIncrements[E.ID];
     double pWeightTowardCompleteNode = 1/(E.TargetNodeID+1.0); // pot-lex

@@ -1,6 +1,14 @@
 Instructions for using `pmonodromy`
 ===================================
 
+### Build and check
+
+To build `pmonodromy` executable and run several tests type 
+```
+make
+make check
+```
+
 ### Creating a graph file
 
 To use `pmonodoromy`, it is first necessary to create a graph file. These files

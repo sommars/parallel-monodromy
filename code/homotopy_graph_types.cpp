@@ -3,6 +3,33 @@ mt19937 mt; //Standard mersenne_twister_engine seeded with rd()
 bool Verbose;
 
 //------------------------------------------------------------------------------
+double parFailMass(int F, int d, int C, int T, double alpha, int i)
+// F: failureCount, d: rootCount, C: correspCount, T: trackerCount, alpha:successRate, i: #newFail
+{
+  return pow(alpha, i) * pow(1-alpha,T-i) * (F+i)/(d-C-T+i);
+}
+  
+
+double parFailFactor(int F, int d, int C, int T, double alpha)
+{
+  if (d-C-T < 1) // this should never happen
+    abort();
+  if (T==0)
+    return 1 - F/(double)(d-C);
+  double EV = 1;
+  double binCoeff = 1;
+  int mid = floor(T/2);
+  for (int i = 0; i <= mid; i++)
+  {
+    if (i<mid || T%2==0)
+      EV -= binCoeff * (parFailMass(F,d,C,T,alpha,i)+parFailMass(F,d,C,T,alpha,T-i));
+    else
+      EV -= binCoeff * parFailMass(F,d,C,T,alpha,i);
+    binCoeff *= (T-i-1)/(i+1);
+  };
+  return EV;
+}
+
 void AddEdges(HomotopyGraph* G, HomotopyNode* N1, HomotopyNode* N2, string &CorrStr)
 {
   HomotopyDirectedEdge E1;
@@ -258,7 +285,7 @@ void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N)
   {
     HomotopyDirectedEdge& E = G->Edges[e];
     E.ExpectedFailures = E.SourceFailures + (1-G->Alpha)*E.TrackerCount;
-    int Denominator = G->RootCount - E.SuccessfulCorrespondences - E.SourceFailures;
+    int Denominator = G->RootCount - E.SuccessfulCorrespondences;
     if (Denominator == 0 && G->Alpha == 1.0) // not a robust comparison for floats
     {
       // If the denominator is zero and there are no failures, this means that what is currently in progress
@@ -266,16 +293,16 @@ void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N)
       N->ExpectedValue = G->RootCount;
       break;
       }
-    N->ExpectedValue += (E.TrackerCount) * (G->Alpha) * (double)(G->RootCount - N->ExpectedValue) * (1 - E.ExpectedFailures / (double)(G->RootCount-E.SuccessfulCorrespondences)) / Denominator; // ie, zero in serial      
+    N->ExpectedValue += (E.TrackerCount) * (G->Alpha) * (double)(G->RootCount - N->ExpectedValue) / Denominator; // ie, zero in serial      
   }
   
   // a loop that updates potE at incoming edges
   for (auto& e : N->IncomingEdgeIDs)
   {
-    HomotopyDirectedEdge& E = G->Edges[e]; 
+    HomotopyDirectedEdge& E = G->Edges[e];
     EdgeIncrements[E.ID] = (G->RootCount == E.SuccessfulCorrespondences + E.TrackerCount + E.SourceFailures) ?
     -1 : // this edge is dead and the denominator below is 0
-     (G->Alpha) * (double)(G->RootCount - N->ExpectedValue) * (1 - E.ExpectedFailures / (double)(G->RootCount-E.SuccessfulCorrespondences)) / (G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount - E.SourceFailures);
+      (G->Alpha) * (double)(G->RootCount - N->ExpectedValue) * parFailFactor(E.SourceFailures,G->RootCount,E.SuccessfulCorrespondences,E.TrackerCount,G->Alpha) / (G->RootCount - E.SuccessfulCorrespondences - E.TrackerCount - E.SourceFailures);
     if (EdgeIncrements[E.ID] != -1 && EdgeIncrements[E.ID] <0)
       //cerr << " first " << (double)(G->RootCount - N->ExpectedValue - E.ExpectedFailures) << " second " << (1 - E.ExpectedFailures / (double)(G->RootCount-E.SuccessfulCorrespondences)) << endl;
                                                                //cerr << E.ID << " has crsps, fails, node ev" << E.SuccessfulCorrespondences << " , " << E.SourceFailures << " , " << N->ExpectedValue << endl;

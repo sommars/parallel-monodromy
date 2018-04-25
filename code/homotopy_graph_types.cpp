@@ -5,19 +5,19 @@ bool Verbose;
 //------------------------------------------------------------------------------
 double parFailMass(int F, int d, int C, int T, double alpha, int curFailCount)
 {
-  return pow(alpha, curFailCount) * pow(1-alpha,T-curFailCount) * (F+curFailCount)/(d-C-T+curFailCount);
+  return pow(alpha, T-curFailCount) * pow(1-alpha,curFailCount) * (F+curFailCount)/(d-C-T+curFailCount);
 }
   
 
 double parFailFactor(int F, int d, int C, int T, double alpha)
 {
-  if (d-C-T < 1) // this should never happen
+  if (d-C-T < 1)
     throw "bad potential update (division by int <= 0)";
   if (T==0)
     return 1 - F/(double)(d-C);
   double EV = 1;
   double binCoeff = 1;
-  int mid = floor(T/2);
+  int mid = floor(T/(double)(2));
   for (int i = 0; i <= mid; i++)
   {
     if (i<mid || T%2==0)

@@ -12,8 +12,9 @@ meshSize=length(lambdas)
 iters=10--might need more to reduce variance
 
 setRandomSeed 0;
-exampleFiles = {"../../graph-examples/cyclic/cyclic-5-(N=5)-(m=1)-(seed=0).graph",
-	"../../graph-examples/cyclic/cyclic-7-(N=5)-(m=1)-(seed=0).graph"}
+exampleFiles = {"../../graph-examples/cyclic/cyclic-5-(N=5)-(m=1)-(seed=0).graph"
+		,"../../graph-examples/cyclic/cyclic-7-(N=5)-(m=1)-(seed=0).graph"
+		}
 dataFiles = {"cyclic-5.csv", "cyclic-7.csv"}
 scan(#exampleFiles, 
     exampleN-> (
@@ -27,8 +28,8 @@ scan(#exampleFiles,
 	elapsedTime scan(iters, it->(
 		convertToFailures(example,filename,a);
 		for i from 0 to (meshSize-1) do(
-		    updateLambda(filename,lambdas#i);
-		    run(codeDirectory|"pmonodromy "|filename|" 1 ConvexCombination > " |outfilename);  -- FAILS FOR 10 THREADS!!!
+		    -- updateLambda(filename,lambdas#i);
+		    run(codeDirectory|"pmonodromy "|filename|" -t 1 -e ConvexCombination -l "| toString lambdas#i | " > " |outfilename);  -- FAILS FOR 10 THREADS!!!
 		    l=(lines get outfilename);
 		    M#i = M#i + value substring(l#-5,17);
 		    N#i = N#i + value substring(l#-6,11);

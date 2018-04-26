@@ -41,3 +41,11 @@ check:
 	./pmonodromy test/graphs/2.graph -t 8 -v -e WeightTowardCompleteNode -s 0 > test/out/6 2>&1
 	./pmonodromy test/graphs/2.graph -t 8 -v -e WeightTowardCompleteNode -s 0 -old > test/out/6old 2>&1
 	diff -I 'UseOldEVs' test/out/6 test/out/6old
+
+check2:
+	./pmonodromy ./graph-examples/random.graph -v -s 0 -t 10 -old > test/out/7 2>&1
+	./pmonodromy ./graph-examples/random.graph -v -s 0 -t 10 > test/out/7old 2>&1
+	diff -I 'UseOldEVs' test/out/7 test/out/7old
+	./pmonodromy test/graphs/2.graph -v -s 0 -t 10 -l 2.3 -old > test/out/8 2>&1
+	./pmonodromy test/graphs/2.graph -v -s 0 -t 10 -l 0 > test/out/8old 2>&1
+	diff -I 'UseOldEVs' test/out/8 test/out/8old

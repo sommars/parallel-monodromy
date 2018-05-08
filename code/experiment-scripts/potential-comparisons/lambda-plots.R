@@ -1,5 +1,22 @@
 library(latex2exp)
 
+# fabricated
+
+cvxFab <- read.csv("../../../experiments/1000fabricated.csv")
+cvxFab2 <- read.csv("../../../experiments/1000fabricated2.csv")
+
+summary(cvxFab)
+summary(cvxFab2)
+
+par(mfrow=c(1,2),oma=c(0,0,2,0))
+plot(cvxFab$lambda,cvxFab$ntracks,xlab=TeX('$\\lambda$'),ylab="Average Number of Path Tracks")#,main=TeX('Random Solution Graph (d=1000,m=3,N=3,100 trials)'))
+plot(cvxFab2$lambda,cvxFab2$ntracks,xlab=TeX('$\\lambda$'),ylab="Average Number of Path Tracks")#,main=TeX('Random Solution Graph (d=1000,m=3,N=3,100 trials)'))
+title("Random Solution Graph (d=1000,m=3,N=3,100 trials)",outer=TRUE)
+dev.copy(png, "../../../../parallel-monodromy-paper/paper/PIX/convex_fab_combined.png")
+dev.off()
+
+# real
+
 cvx5 <- read.csv("cyclic-5.csv")
 cvx7 <- read.csv("cyclic-7.csv")
 #cvx9 <- read.csv("../../../experiments/9cyclic-5.csv")

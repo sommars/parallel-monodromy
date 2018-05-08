@@ -316,8 +316,10 @@ void ComputeExpectedValues(HomotopyGraph* G, HomotopyNode* N)
       E.ExpectedValue = pOriginal;
     else if (G->EVType=="WeightTowardCompleteNode") // !!! should rename
       E.ExpectedValue = pWeightTowardCompleteNode;
-    else if(G->EVType=="ConvexCombination") // !!! should rename
-      E.ExpectedValue = pow((double)G->Nodes[E.TargetNodeID].SolutionCount/(double)G->RootCount,G->Lambda) * pOriginal; 
+    else if(G->EVType=="ConvexCombination") {
+			E.ExpectedValue = pow((double)G->Nodes[E.TargetNodeID].SolutionCount/(double)G->RootCount,G->Lambda) * pOriginal; 
+		  //cerr << "potentials (orig,cmpl,lmbd): " << pOriginal << ", " << pWeightTowardCompleteNode << ", " << E.ExpectedValue << endl;
+		}
     else 
       cerr << "Invalid option in ComputeExpectedValues: " << G->EVType << endl;
   if (Verbose)

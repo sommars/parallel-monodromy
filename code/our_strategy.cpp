@@ -141,7 +141,10 @@ bool TryChoosePath(HomotopyGraph* G, HomotopyGraph* CompletedG, PathTracker* Tra
   }
   E->TrackerCount++;
   
-  int SolutionToTrack = *(E->TrackableSolutions.begin());
+	uniform_int_distribution<int> SolutionChooser(0,E->TrackableSolutions.size()-1);
+  auto randSol = E->TrackableSolutions.begin();
+	for (int i=0; i<SolutionChooser(mt); i++) randSol++;
+	int SolutionToTrack = *randSol;
   E->TrackableSolutions.erase(SolutionToTrack);
 
   Tracker->StartSolution = SolutionToTrack;

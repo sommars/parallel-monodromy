@@ -13,7 +13,7 @@ simulate = (a,inFilename,rootCount,nodeCount,e) -> ( --no more arguments please
 	else simInFile=inFilename;
 	outFilename = simInFile | ".out";
 	for i from 0 to (iterations -1) do (
-		run (codeDirectory|"pmonodromy "|simInFile|" 1 > " | outFilename);
+		run (codeDirectory|"pmonodromy "|simInFile|" > " | outFilename);
 		l=(lines get outFilename);
 		output:=last l;
 		percentage:=replace("[^0-9]", "", output);

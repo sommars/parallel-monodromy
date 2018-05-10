@@ -14,7 +14,7 @@ for n in nList do (
     RunTimesForColumn = {};
     for ThreadCount in ThreadCounts do (
         outfilename = basefilename|"-" | ThreadCount | "Threads.out";
-        run ("../../pmonodromy " | filename | " -t " | ThreadCount | "-e  Original " | RandomSeeds | " > " | outfilename);
+        run ("../../pmonodromy " | filename | " -t " | ThreadCount | " -e  Original " | RandomSeeds | " > " | outfilename);
         RunTimesForColumn = append(RunTimesForColumn, value(substring((lines get outfilename)#-6,11)));
         run("rm " | outfilename)
     );
